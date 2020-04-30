@@ -14,8 +14,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 // Initialize mongoose DB
-const mongoLocal = `mongodb://localhost:27017/${DB_NAME}`
-const mongoAtlas = `mongodb+srv://${DB_USER}:${DB_PASS}@cluster0-hyjeh.mongodb.net/${DB_NAME}`
+const mongoLocal = `mongodb://localhost:27017/${process.env.DB_NAME}`
+const mongoAtlas = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0-hyjeh.mongodb.net/${process.env.DB_NAME}`
 
 mongoose.connect(mongoAtlas, {
   useNewUrlParser: true,  useUnifiedTopology: true, useFindAndModify: false
