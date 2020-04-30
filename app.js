@@ -6,13 +6,21 @@ const mongoose = require("mongoose");
 const _ = require("lodash");
 const app = express();
 
+require('dotenv').config()
+
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 // Initialize mongoose DB
-mongoose.connect("mongodb+srv://admin-john:123test@cluster0-hyjeh.mongodb.net/todolistDB", {useNewUrlParser: true,  useUnifiedTopology: true, useFindAndModify: false});
+const mongoLocal = `mongodb://localhost:27017/${DB_NAME}`
+const mongoAtlas = `mongodb+srv://${DB_USER}:${DB_PASS}@cluster0-hyjeh.mongodb.net/${DB_NAME}`
+
+mongoose.connect(mongoAtlas, {
+  useNewUrlParser: true,  useUnifiedTopology: true, useFindAndModify: false
+});
+
 // Initialize Schema
 let itemsSchema = {
   name: String
@@ -38,7 +46,6 @@ let listSchema = {
 }
 // Create model
 let List = mongoose.model("List", listSchema);
-
 
 // HOME ROUTE
 app.get("/", function(req, res) {
@@ -73,7 +80,6 @@ app.post("/", function(req, res){
   let itemName = req.body.newItem;
   let listName = req.body.list;
 
-
   let item = new Item({
     name: itemName
   });
@@ -81,7 +87,7 @@ app.post("/", function(req, res){
   // Check if list is default homepage
   if (listName === "Today") {
     // Save item on mongo
-    item.save();
+    item.save();  
     // Reroute after saving
     res.redirect("/");
   } else {
@@ -120,9 +126,7 @@ app.get("/:customName", function (req,res) {
       }
     }
   });
-
 });
-
 
 // Delete Route
 app.post("/delete", function(req, res) {
@@ -156,22 +160,15 @@ app.post("/delete", function(req, res) {
       }
     });
   }
-  
-  
-
 });
-
 
 
 app.get("/about", function(req, res){
   res.render("about");
 });
-let port = process.env.PORT;
-if (port == null || port == "") {
-  port = 3000;
-}
 
-// app.listen(port);
+const port = process.env.PORT || 3000;
+
 app.listen(port, function() {
   console.log("Server started");
 });
